@@ -60,44 +60,46 @@ const { User } = require("../model/user.schema")
 const { signToken } = require("../utils/jwt")
 
 // ================= REGISTER (ADMIN ONLY) =================
-exports.register = async (req, res) => {
-    try {
-        const { name, login, password, role } = req.body
+exports.createSeller = async (req, res) => {
+    console.log("REQ.USER >>>", req.user)
 
-        // faqat admin user yarata oladi
+    try {
+        const { name, login, password } = req.body
+
         if (req.user.role !== "admin") {
-            return res.status(403).json({ message: "Ruxsat yo'q" })
+            return res.status(403).json({ message: "Admin only" })
         }
 
-        const existingUser = await User.findOne({ login })
-        if (existingUser) {
+        const exists = await User.findOne({ login })
+        if (exists) {
             return res.status(409).json({ message: "User already exists" })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const newUser = await User.create({
+        const seller = await User.create({
             name,
             login,
             password: hashedPassword,
-            role,
+            role: "seller",
             storeId: req.user.store_id
         })
 
         res.status(201).json({
-            message: "User registered successfully",
+            message: "Seller yaratildi",
             user: {
-                id: newUser._id,
-                name: newUser.name,
-                role: newUser.role,
-                storeId: newUser.store_id
+                id: seller._id,
+                name: seller.name,
+                role: seller.role
             }
         })
-    } catch (error) {
-        console.error("Registration error:", error)
+
+    } catch (err) {
+        console.error(err)
         res.status(500).json({ message: "Server error" })
     }
 }
+
 
 // ================= LOGIN =================
 exports.login = async (req, res) => {
@@ -116,7 +118,7 @@ exports.login = async (req, res) => {
 
         const token = signToken({
             user_id: user._id,
-            storeId: user.store_id,
+            store_id: user.storeId,
             role: user.role
         })
 
@@ -126,7 +128,7 @@ exports.login = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 role: user.role,
-                storeId: user.store_id
+                store_id: user.storeId
             }
         })
     } catch (error) {
