@@ -61,8 +61,6 @@ const { signToken } = require("../utils/jwt")
 
 // ================= REGISTER (ADMIN ONLY) =================
 exports.createSeller = async (req, res) => {
-    console.log("REQ.USER >>>", req.user)
-
     try {
         const { name, login, password } = req.body
 
