@@ -1,5 +1,6 @@
 const express = require("express")
 const cors = require("cors")
+
 const app = express()
 
 app.use(express.json())
@@ -20,6 +21,5 @@ app.use("/api/stores", storeRoutes)
 app.use("/api/stock", stockInRoutes)
 app.use("/api/sales", saleRoutes)
 app.use("/api/credits", creditRoutes)
-
 
 module.exports = app
