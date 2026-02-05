@@ -147,3 +147,55 @@ exports.me = async (req, res) => {
         res.status(500).json({ message: "Server error" })
     }
 }
+
+exports.getUsers = async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Admin only" })
+        }
+        const users = await User.find({ storeId: req.user.store_id }).select("-password")
+        res.json({ message: "Users fetched successfully", count: users.length, users })
+    } catch (error) {
+        res.status(500).json({ message: "Server error" })
+    }
+}
+
+exports.getUser = async (req, res) => {
+    try {
+        const { userId } = req.params
+
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Admin only" })
+        }
+
+        const user = await User.findById(userId).select("-password")
+        if (!user) {
+            return res.status(404).json({ message: "User not foundd" })
+        }
+
+        res.json({ message: "User fetched successfully", user })
+    } catch (error) {
+        res.status(500).json({ message: "Server error" })
+    }
+}
+
+exports.deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params
+
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Admin only" })
+        }
+
+        const user = await User.findById(userId)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        const removed = await User.findByIdAndDelete(userId)
+        res.json({ message: "User deleted successfully" })
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error" })
+    }
+}   
