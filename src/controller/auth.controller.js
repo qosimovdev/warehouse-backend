@@ -65,12 +65,12 @@ exports.createSeller = async (req, res) => {
         const { name, login, password } = req.body
 
         if (req.user.role !== "admin") {
-            return res.status(403).json({ message: "Admin only" })
+            return res.status(403).json({ message: "Faqat admin kiradi" })
         }
 
         const exists = await User.findOne({ login })
         if (exists) {
-            return res.status(409).json({ message: "User already exists" })
+            return res.status(409).json({ message: "Foydalanuvchi allaqachon mavjud" })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -94,7 +94,7 @@ exports.createSeller = async (req, res) => {
 
     } catch (err) {
         console.error(err)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -106,12 +106,12 @@ exports.login = async (req, res) => {
 
         const user = await User.findOne({ login })
         if (!user) {
-            return res.status(404).json({ message: "User not found" })
+            return res.status(404).json({ message: "Foydalanuvchi topilmadi" })
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            return res.status(401).json({ message: "Login or password invalid" })
+            return res.status(401).json({ message: "Login yoki parol noto'g'ri" })
         }
 
         const token = signToken({
@@ -131,7 +131,7 @@ exports.login = async (req, res) => {
         })
     } catch (error) {
         console.error("Login error:", error)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -144,19 +144,19 @@ exports.me = async (req, res) => {
 
         res.json(user)
     } catch (error) {
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
 exports.getUsers = async (req, res) => {
     try {
         if (req.user.role !== "admin") {
-            return res.status(403).json({ message: "Admin only" })
+            return res.status(403).json({ message: "Faqat admin kiradi" })
         }
         const users = await User.find({ storeId: req.user.store_id }).select("-password")
-        res.json({ message: "Users fetched successfully", count: users.length, users })
+        res.json({ message: "Foydalanuvchilar muvaffaqiyatli olingan", count: users.length, users })
     } catch (error) {
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -165,17 +165,17 @@ exports.getUser = async (req, res) => {
         const { userId } = req.params
 
         if (req.user.role !== "admin") {
-            return res.status(403).json({ message: "Admin only" })
+            return res.status(403).json({ message: "Faqat admin kiradi" })
         }
 
         const user = await User.findById(userId).select("-password")
         if (!user) {
-            return res.status(404).json({ message: "User not foundd" })
+            return res.status(404).json({ message: "Foydalanuvchi topilmadi" })
         }
 
-        res.json({ message: "User fetched successfully", user })
+        res.json({ message: "Foydalanuvchi muvaffaqiyatli olingan", user })
     } catch (error) {
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -184,18 +184,17 @@ exports.deleteUser = async (req, res) => {
         const { userId } = req.params
 
         if (req.user.role !== "admin") {
-            return res.status(403).json({ message: "Admin only" })
+            return res.status(403).json({ message: "Faqat admin kiradi" })
         }
 
         const user = await User.findById(userId)
         if (!user) {
-            return res.status(404).json({ message: "User not found" })
+            return res.status(404).json({ message: "Foydalanuvchi topilmadi" })
         }
 
         const removed = await User.findByIdAndDelete(userId)
-        res.json({ message: "User deleted successfully" })
-
+        res.json({ message: "Foydalanuvchi muvaffaqiyatli o'chirildi" })
     } catch (error) {
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }   

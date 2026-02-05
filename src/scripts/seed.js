@@ -10,7 +10,7 @@ const MONGO_URI = process.env.MONGO_URI
 async function seed() {
     try {
         await mongoose.connect(MONGO_URI)
-        console.log("✅ MongoDB connected")
+        console.log("✅ MongoDB ulanishi muvaffaqiyatli")
 
         // Store yaratish
         let store = await Store.findOne({ name: "Main Store" })

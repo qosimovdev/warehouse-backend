@@ -5,10 +5,10 @@ exports.createProduct = async (req, res) => {
         const { name, type, diameter_mm, spec, min_stock_meters } = req.body
 
         if (type === "rebar" && !diameter_mm)
-            return res.status(400).json({ message: "Diameter_mm is required for rebar type" })
+            return res.status(400).json({ message: "Armatura turi uchun diameter_mm talab qilinadi" })
 
         if (type !== "rebar" && !spec)
-            return res.status(400).json({ message: "Spec is required for non-rebar types" })
+            return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo‘lishi kerak" })
 
         const exists = await Product.findOne({
             storeId: req.user.store_id,
@@ -16,7 +16,7 @@ exports.createProduct = async (req, res) => {
             isActive: true
         })
         if (exists)
-            return res.status(409).json({ message: "Product already exists" })
+            return res.status(409).json({ message: "Maxsulot allaqachon mavjud" })
 
         const product = await Product.create({
             storeId: req.user.store_id,
@@ -26,10 +26,10 @@ exports.createProduct = async (req, res) => {
             spec,
             min_stock_meters
         })
-        res.status(201).json({ message: "Product created successfully", product })
+        res.status(201).json({ message: "Maxsulot muvaffaqiyatli yaratildi", product })
     } catch (error) {
         console.error("Create product error: ", error)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -42,10 +42,10 @@ exports.getProducts = async (req, res) => {
             name: { $regex: search, $options: "i" }
         }).limit(20)
 
-        res.json({ message: "Products fetched successfully", count: products.length, products })
+        res.json({ message: "Maxsulotlar muvaffaqiyatli olingan", count: products.length, products })
     } catch (error) {
         console.error("Get products error: ", error)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -56,11 +56,11 @@ exports.getProductById = async (req, res) => {
             _id: req.params.id,
             storeId: req.user.store_id
         })
-        if (!product) return res.status(404).json({ message: "Product not found" })
+        if (!product) return res.status(404).json({ message: "Maxsulot topilmadi" })
         res.json(product)
     } catch (error) {
         console.error("Get product by ID error: ", error)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -75,13 +75,13 @@ exports.updateProduct = async (req, res) => {
         })
 
         if (!product)
-            return res.status(404).json({ message: "Product not found" })
+            return res.status(404).json({ message: "Maxsulot topilmadi" })
 
         if (type === "rebar" && !diameter_mm)
-            return res.status(400).json({ message: "diameter_mm required for rebar" })
+            return res.status(400).json({ message: "Armatura turi uchun diameter_mm talab qilinadi" })
 
         if (type !== "rebar" && !spec)
-            return res.status(400).json({ message: "spec required for non-rebar" })
+            return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo'lishi kerak" })
 
         product.name = name ?? product.name
         product.type = type ?? product.type
@@ -91,10 +91,10 @@ exports.updateProduct = async (req, res) => {
 
         await product.save()
 
-        res.json({ message: "Product updated successfully", product })
+        res.json({ message: "Maxsulot muvaffaqiyatli yangilandi", product })
     } catch (error) {
         console.error("Update product error:", error)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
 
@@ -106,18 +106,18 @@ exports.deleteProduct = async (req, res) => {
         })
 
         if (!product)
-            return res.status(404).json({ message: "Product not found" })
+            return res.status(404).json({ message: "Maxsulot topilmadi" })
 
         if (!product.isActive) {
-            return res.status(400).json({ message: "Product already deleted" })
+            return res.status(400).json({ message: "Maxsulot allaqachon o'chirilgan" })
         }
 
         product.isActive = false
         await product.save()
 
-        res.json({ message: "Product deleted successfully" })
+        res.json({ message: "Maxsulot muvaffaqiyatli o'chirildi" })
     } catch (error) {
         console.error("Delete product error:", error)
-        res.status(500).json({ message: "Server error" })
+        res.status(500).json({ message: "Server xatosi" })
     }
 }
