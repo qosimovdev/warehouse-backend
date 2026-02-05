@@ -42,6 +42,9 @@ const productSchema = new Schema({
     }
 }, { timestamps: true })
 
-productSchema.index({ storeId: 1, name: 1 })
+productSchema.index(
+    { storeId: 1, name: 1, isActive: 1 },
+    { unique: true }
+)
 const Product = model("Product", productSchema)
 module.exports = { Product }

@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose")
 
 const stockInSchema = new Schema({
-    product: { type: Schema.Types.ObjectId, ref: "Products", required: true },
+    productID: { type: Schema.Types.ObjectId, ref: "Products", required: true },
     total_meters: { type: Number, required: true },
     price_per_ton: { type: Number, required: true },
     cost_per_meter: { type: Number, required: true },
