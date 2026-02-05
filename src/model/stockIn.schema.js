@@ -9,7 +9,7 @@ const stockInSchema = new Schema({
     },
     productId: {
         type: Schema.Types.ObjectId,
-        ref: "Products",
+        ref: "Product",
         required: true
     },
     tons: Number,
@@ -39,8 +39,20 @@ const stockInSchema = new Schema({
     },
     createdBy: {
         type: Schema.Types.ObjectId,
-        ref: "Users"
-    }
+        ref: "User"
+    },
+    // isCanceled: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    // isCancelRecord: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    // canceledStockInId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "StockIn"
+    // }
 }, { timestamps: true })
 
 const StockIn = model("StockIn", stockInSchema)

@@ -5,6 +5,8 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+app.use(require("./middleware/errorHandler"))
+
 const authRoutes = require("./router/auth.routes")
 const storeRoutes = require("./router/store.routes")
 const productRoutes = require("./router/products.routes")

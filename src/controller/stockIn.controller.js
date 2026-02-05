@@ -1,89 +1,3 @@
-// const { Product } = require("../model/product.schema")
-// const { StockIn } = require("../model/stockIn.schema")
-// const { calculateMeters, calculateTotalCostUZS, calculateWeightedAvg, round } = require("../utils/stockCalculations")
-
-// exports.createStockIn = async (req, res) => {
-//     try {
-
-
-//         const {
-//             productId,
-//             tons,
-//             currency,
-//             usd_rate,
-//             price_per_ton,
-//             pieces,
-//             piece_length_m,
-//             kg_per_m
-//         } = req.body
-
-//         const product = await Product.findOne({
-//             _id: productId,
-//             storeId: req.user.store_id
-//         })
-
-//         if (!product) {
-//             return res.status(404).json({ message: "Mahsulot topilmadi." })
-//         }
-
-//         // Metrlarni hisoblash
-//         const total_meters = round(calculateMeters({
-//             productType: product.type,
-//             pieces,
-//             piece_length_m,
-//             tons,
-//             kg_per_m
-//         }))
-
-//         // Umumiy narxni hisoblash (UZSda)
-//         const total_cost_uzs = round(calculateTotalCostUZS({
-//             tons,
-//             price_per_ton,
-//             currency,
-//             usd_rate
-//         }))
-
-//         const cost_per_meter = round(total_cost_uzs / total_meters)
-
-//         // og'irlikka asoslangan o'rtacha narxni hisoblash
-//         const new_avg = round(calculateWeightedAvg({
-//             old_meters: product.stock_meters,
-//             old_avg: product.avg_cost_per_meter,
-//             new_meters: total_meters,
-//             new_cost_per_meter: cost_per_meter
-//         }))
-
-//         // product yangilash
-//         product.stock_meters = round(product.stock_meters + total_meters, 3)
-//         product.avg_cost_per_meter = round(new_avg, 2)
-//         await product.save()
-
-//         // stockIn yaratish
-//         const stockIn = await StockIn.create({
-//             storeId: req.user.store_id,
-//             productId,
-//             tons,
-//             total_meters,
-//             currency,
-//             usd_rate,
-//             price_per_ton,
-//             total_cost_uzs,
-//             createdBy: req.user.user_id
-//         })
-//         return res.status(201).json({
-//             message: "Stock in yaratildi.",
-//             stockIn,
-//             product
-//         })
-//     } catch (error) {
-//         console.error("Stock in yaratishda xatolik:", error)
-//         return res.status(500).json({
-//             message: "Serverda xatolik yuz berdi."
-//         })
-//     }
-// }
-
-
 const mongoose = require('mongoose');
 const { Product } = require('../model/product.schema');
 const { StockIn } = require('../model/stockIn.schema');
@@ -184,3 +98,129 @@ exports.createStockIn = async (req, res, next) => {
         next(err);
     }
 };
+
+
+exports.getStockIns = async (req, res) => {
+    try {
+        const { productId, fromDate, toDate } = req.query;
+        const filter = { storeId: req.user.store_id };
+        if (fromDate || toDate) {
+            filter.createdAt = {};
+            if (fromDate) {
+                filter.createdAt.$gte = new Date(fromDate);
+            }
+            if (toDate) {
+                const end = new Date(toDate);
+                end.setHours(23, 59, 59, 999);
+                filter.createdAt.$lte = end;
+            }
+        }
+        if (fromDate && isNaN(Date.parse(fromDate))) {
+            return res.status(400).json({ message: "fromDate noto'g'ri formatda" });
+        }
+        if (toDate && isNaN(Date.parse(toDate))) {
+            return res.status(400).json({ message: "toDate noto'g'ri formatda" });
+        }
+
+        const stockIns = await StockIn
+            .find(filter)
+            .populate({
+                path: 'productId',
+                select: 'name type spec diameter_mm'
+            })
+            .populate({
+                path: 'createdBy',
+                select: "name login"
+            })
+            .sort({ createdAt: -1 });
+
+        res.json({ message: "StockIns olindi", count: stockIns.length, stockIns });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+exports.getStockInById = async (req, res) => {
+    try {
+        const stockIn = await StockIn.findOne({
+            _id: req.params.id,
+            storeId: req.user.store_id
+        })
+            .populate({
+                path: 'productId',
+                select: 'name type spec diameter_mm'
+            })
+            .populate({
+                path: 'createdBy',
+                select: "name login"
+            })
+
+        if (!stockIn)
+            return res.status(404).json({ message: "StockIn topilmadi" });
+
+        res.json(stockIn);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
+// const mongoose = require("mongoose");
+
+// exports.cancelStockIn = async (req, res) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     const stockIn = await StockIn
+//       .findById(req.params.id)
+//       .session(session);
+
+//     if (!stockIn)
+//       throw new Error("StockIn topilmadi");
+
+//     if (stockIn.isCanceled)
+//       throw new Error("Bu stockIn allaqachon bekor qilingan");
+
+//     const product = await Product
+//       .findById(stockIn.productId)
+//       .session(session);
+
+//     // productdan metrni AYIR
+//     product.stock_meters -= stockIn.total_meters;
+
+//     if (product.stock_meters < 0)
+//       throw new Error("Stock manfiy bo'lib ketdi");
+
+//     await product.save({ session });
+
+//     //  cancel yozuv
+//     await StockIn.create([{
+//       storeId: stockIn.storeId,
+//       productId: stockIn.productId,
+//       tons: -stockIn.tons,
+//       total_meters: -stockIn.total_meters,
+//       currency: stockIn.currency,
+//       price_per_ton: stockIn.price_per_ton,
+//       total_cost_uzs: -stockIn.total_cost_uzs,
+//       usd_rate_used: stockIn.usd_rate_used,
+//       createdBy: req.user.id,
+//       isCancelRecord: true,
+//       canceledStockInId: stockIn._id
+//     }], { session });
+
+//     //  eski yozuvni belgilash
+//     stockIn.isCanceled = true;
+//     await stockIn.save({ session });
+
+//     await session.commitTransaction();
+//     session.endSession();
+
+//     res.json({ message: "StockIn bekor qilindi (reverse qilindi)" });
+
+//   } catch (err) {
+//     await session.abortTransaction();
+//     session.endSession();
+//     res.status(400).json({ message: err.message });
+//   }
+// };

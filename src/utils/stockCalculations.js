@@ -35,7 +35,6 @@ exports.calculateMeters = ({
     tons,
     kg_per_m
 }) => {
-
     if (productType === "rebar") {
         if (!Number.isFinite(pieces) || !Number.isFinite(piece_length_m))
             throw new Error("Armatura uchun dona soni va uzunligi kiritilishi shart.");

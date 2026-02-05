@@ -8,7 +8,7 @@ exports.createProduct = async (req, res) => {
             return res.status(400).json({ message: "Armatura turi uchun diameter_mm talab qilinadi" })
 
         if (type !== "rebar" && !spec)
-            return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo‘lishi kerak" })
+            return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo'lishi kerak" })
 
         const exists = await Product.findOne({
             storeId: req.user.store_id,
