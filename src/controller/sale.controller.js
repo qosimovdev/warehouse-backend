@@ -14,7 +14,6 @@ exports.createSale = async (req, res) => {
         due_date
     } = req.body;
 
-    // 🔴 validationlar transactiondan OLDIN
     if (payment_type === "credit" && (!customer_name || !due_date)) {
         return res.status(400).json({
             message: "Nasiya uchun mijoz va muddat kiritilishi shart"
@@ -126,6 +125,29 @@ exports.getSales = async (req, res) => {
 
     } catch (error) {
         console.error("Get sales error:", error);
+        res.status(500).json({ message: "Server xatosi" });
+    }
+};
+
+exports.getSaleById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Noto'g'ri sale ID" });
+        }
+        const sale = await Sale.findOne({
+            _id: id,
+            storeId: req.user.store_id
+        })
+            .populate("productId", "name stock_meters diameter_mm")
+            .populate("sellerId", "username name login");
+
+        if (!sale)
+            return res.status(404).json({ message: "Sotuv topilmadi" });
+
+        res.status(200).json(sale);
+    } catch (error) {
+        console.error("Get sale by ID error:", error);
         res.status(500).json({ message: "Server xatosi" });
     }
 };
