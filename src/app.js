@@ -38,6 +38,14 @@ const stockInRoutes = require("./router/stockIn.routes")
 const saleRoutes = require("./router/sale.routes")
 const creditRoutes = require("./router/credit.routes")
 
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        message: 'Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.use("/api/auth", authRoutes)
 app.use("/api/stores", storeRoutes)
 app.use("/api/products", productRoutes)
@@ -45,11 +53,9 @@ app.use("/api/stock", stockInRoutes)
 app.use("/api/sales", saleRoutes)
 app.use("/api/credits", creditRoutes)
 
-app.use(require("./middleware/errorHandler"))
 
-app.get("/", (req, res) => {
-    res.send("API is running 🚀");
-});
+
+app.use(require("./middleware/errorHandler"))
 
 
 module.exports = app
