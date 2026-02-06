@@ -47,4 +47,9 @@ app.use("/api/credits", creditRoutes)
 
 app.use(require("./middleware/errorHandler"))
 
+app.get("/", (req, res) => {
+    res.send("API is running 🚀");
+});
+
+
 module.exports = app

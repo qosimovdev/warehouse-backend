@@ -15,7 +15,7 @@ const connectDB = require("./src/config/db")
 
 connectDB()
 
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 7777
 app.listen(PORT, () => {
     console.log(`Server running on port http://localhost:${PORT}`)
 })
