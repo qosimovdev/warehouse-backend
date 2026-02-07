@@ -2,8 +2,6 @@
 # Environment variables
 # =========================
 .env
-.env.*
-!.env.example
 
 # =========================
 # Node dependencies
@@ -27,12 +25,6 @@ build/
 .cache/
 .tmp/
 .temp/
-
-# =========================
-# Tests
-# =========================
-coverage/
-.nyc_output/
 
 # =========================
 # OS files
