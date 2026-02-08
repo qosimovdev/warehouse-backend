@@ -40,7 +40,6 @@ exports.stockInHistory = async (req, res) => {
     }
     const stockIn = await StockIn.find(filter)
         .sort({ createdAt: -1 })
-
     res.json({
         message: "Kirimlar tarixi",
         stockIn

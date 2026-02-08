@@ -6,16 +6,12 @@ exports.getProfit = async (req, res) => {
     try {
         const storeId = new mongoose.Types.ObjectId(req.user.store_id);
         const { from, to } = req.query;
-
         const match = { storeId };
-
         if (from || to) {
             match.createdAt = {};
             if (from) match.createdAt.$gte = new Date(from);
             if (to) match.createdAt.$lte = new Date(to);
         }
-
-        // 1️⃣ Sales aggregation
         const salesAgg = await Sale.aggregate([
             { $match: match },
             {
@@ -27,12 +23,10 @@ exports.getProfit = async (req, res) => {
                 }
             }
         ]);
-
         const revenue = salesAgg[0]?.revenue || 0;
         const cost = salesAgg[0]?.cost || 0;
         const grossProfit = salesAgg[0]?.profit || 0;
 
-        // 2️⃣ Expenses aggregation
         const expenseAgg = await Expense.aggregate([
             { $match: match },
             {
@@ -44,7 +38,6 @@ exports.getProfit = async (req, res) => {
         ]);
 
         const expenses = expenseAgg[0]?.total || 0;
-
         res.json({
             revenue,
             cost,
@@ -52,7 +45,6 @@ exports.getProfit = async (req, res) => {
             expenses,
             netProfit: grossProfit - expenses
         });
-
     } catch (error) {
         console.error("Get profit error:", error);
         res.status(500).json({ message: "Server xatosi" });
@@ -63,18 +55,14 @@ exports.getTopProducts = async (req, res) => {
     try {
         const storeId = new mongoose.Types.ObjectId(req.user.store_id);
         const { from, to } = req.query;
-
         const match = { storeId };
-
         if (from || to) {
             match.createdAt = {};
             if (from) match.createdAt.$gte = new Date(from);
             if (to) match.createdAt.$lte = new Date(to);
         }
-
         const top = await Sale.aggregate([
             { $match: match },
-
             {
                 $group: {
                     _id: "$productId",
@@ -83,10 +71,8 @@ exports.getTopProducts = async (req, res) => {
                     totalRevenue: { $sum: "$totalPriceUzs" }
                 }
             },
-
             { $sort: { totalProfit: -1 } },
             { $limit: 10 },
-
             {
                 $lookup: {
                     from: "products",
@@ -96,7 +82,6 @@ exports.getTopProducts = async (req, res) => {
                 }
             },
             { $unwind: "$product" },
-
             {
                 $project: {
                     _id: 0,
@@ -108,12 +93,10 @@ exports.getTopProducts = async (req, res) => {
                 }
             }
         ]);
-
         res.json({
             total: top.length,
             products: top
         });
-
     } catch (error) {
         console.error("Get top products error:", error);
         res.status(500).json({ message: "Server xatosi" });
@@ -122,7 +105,6 @@ exports.getTopProducts = async (req, res) => {
 
 exports.getSellerStats = async (req, res) => {
     const storeId = req.user.store_id
-
     const stats = await Sale.aggregate([
         { $match: { storeId } },
         {
@@ -143,7 +125,6 @@ exports.getSellerStats = async (req, res) => {
         },
         { $unwind: "$seller" }
     ])
-
     res.json(stats)
 }
 

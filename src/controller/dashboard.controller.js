@@ -5,26 +5,21 @@ const { Expense } = require("../model/expense.schema")
 const { Store } = require("../model/store.schema")
 const { StockIn } = require("../model/stockIn.schema")
 
-
 exports.getSummary = async (req, res) => {
     const storeId = req.user.store_id
     const store = await Store.findById(storeId)
-
     const totalSales = await Sale.aggregate([
         { $match: { storeId } },
         { $group: { _id: null, total: { $sum: "$totalPriceUzs" } } }
     ])
-
     const totalExpenses = await Expense.aggregate([
         { $match: { storeId } },
         { $group: { _id: null, total: { $sum: "$amountUzs" } } }
     ])
-
     const creditExpected = await Credit.aggregate([
         { $match: { storeId, isPaid: false } },
         { $group: { _id: null, total: { $sum: "$totalAmountUzs" } } }
     ])
-
     res.json({
         totalSales: totalSales[0]?.total || 0,
         cash: store.balance.cash,

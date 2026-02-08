@@ -5,18 +5,14 @@ const { signToken } = require("../utils/jwt")
 exports.createSeller = async (req, res) => {
     try {
         const { name, login, password } = req.body
-
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Faqat admin kiradi" })
         }
-
         const exists = await User.findOne({ login })
         if (exists) {
             return res.status(409).json({ message: "Foydalanuvchi allaqachon mavjud" })
         }
-
         const hashedPassword = await bcrypt.hash(password, 10)
-
         const seller = await User.create({
             name,
             login,
@@ -24,7 +20,6 @@ exports.createSeller = async (req, res) => {
             role: "seller",
             storeId: req.user.store_id
         })
-
         res.status(201).json({
             message: "Seller yaratildi",
             user: {
@@ -33,34 +28,28 @@ exports.createSeller = async (req, res) => {
                 role: seller.role
             }
         })
-
     } catch (err) {
         console.error(err)
         res.status(500).json({ message: "Server xatosi" })
     }
 }
 
-
 exports.login = async (req, res) => {
     try {
         const { login, password } = req.body
-
         const user = await User.findOne({ login })
         if (!user) {
             return res.status(404).json({ message: "Foydalanuvchi topilmadi" })
         }
-
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
             return res.status(401).json({ message: "Login yoki parol noto'g'ri" })
         }
-
         const token = signToken({
             user_id: user._id,
             store_id: user.storeId,
             role: user.role
         })
-
         res.json({
             token,
             user: {
@@ -103,16 +92,13 @@ exports.getUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
     try {
         const { userId } = req.params
-
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Faqat admin kiradi" })
         }
-
         const user = await User.findById(userId).select("-password")
         if (!user) {
             return res.status(404).json({ message: "Foydalanuvchi topilmadi" })
         }
-
         res.json({ message: "Foydalanuvchi muvaffaqiyatli olingan", user })
     } catch (error) {
         res.status(500).json({ message: "Server xatosi" })
@@ -122,16 +108,13 @@ exports.getUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const { userId } = req.params
-
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Faqat admin kiradi" })
         }
-
         const user = await User.findById(userId)
         if (!user) {
             return res.status(404).json({ message: "Foydalanuvchi topilmadi" })
         }
-
         const removed = await User.findByIdAndDelete(userId)
         res.json({ message: "Foydalanuvchi muvaffaqiyatli o'chirildi" })
     } catch (error) {

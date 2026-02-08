@@ -3,13 +3,10 @@ const { Product } = require("../model/product.schema")
 exports.createProduct = async (req, res) => {
     try {
         const { name, type, diameterMm, spec, minStockMeters } = req.body
-
         if (type === "rebar" && !diameterMm)
             return res.status(400).json({ message: "Armatura turi uchun diameterMm talab qilinadi" })
-
         if (type !== "rebar" && !spec)
             return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo'lishi kerak" })
-
         const exists = await Product.findOne({
             storeId: req.user.store_id,
             name,
@@ -17,7 +14,6 @@ exports.createProduct = async (req, res) => {
         })
         if (exists)
             return res.status(409).json({ message: "Maxsulot allaqachon mavjud" })
-
         const product = await Product.create({
             storeId: req.user.store_id,
             name,
@@ -41,7 +37,6 @@ exports.getProducts = async (req, res) => {
             storeId: req.user.store_id,
             name: { $regex: search, $options: "i" }
         }).limit(20)
-
         res.json({ message: "Maxsulotlar muvaffaqiyatli olingan", count: products.length, products })
     } catch (error) {
         console.error("Get products error: ", error)
@@ -67,13 +62,11 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try {
         const { name, type, diameterMm, spec, minStockMeters } = req.body
-
         const product = await Product.findOne({
             _id: req.params.id,
             storeId: req.user.store_id,
             isActive: true
         })
-
         if (!product)
             return res.status(404).json({ message: "Maxsulot topilmadi" })
 
@@ -82,15 +75,12 @@ exports.updateProduct = async (req, res) => {
 
         if (type !== "rebar" && !spec)
             return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo'lishi kerak" })
-
         product.name = name ?? product.name
         product.type = type ?? product.type
         product.diameterMm = type === "rebar" ? diameterMm : undefined
         product.spec = type !== "rebar" ? spec : undefined
         product.minStockMeters = minStockMeters ?? product.minStockMeters
-
         await product.save()
-
         res.json({ message: "Maxsulot muvaffaqiyatli yangilandi", product })
     } catch (error) {
         console.error("Update product error:", error)
@@ -104,17 +94,14 @@ exports.deleteProduct = async (req, res) => {
             _id: req.params.id,
             storeId: req.user.store_id
         })
-
         if (!product)
             return res.status(404).json({ message: "Maxsulot topilmadi" })
 
         if (!product.isActive) {
             return res.status(400).json({ message: "Maxsulot allaqachon o'chirilgan" })
         }
-
         product.isActive = false
         await product.save()
-
         res.json({ message: "Maxsulot muvaffaqiyatli o'chirildi" })
     } catch (error) {
         console.error("Delete product error:", error)

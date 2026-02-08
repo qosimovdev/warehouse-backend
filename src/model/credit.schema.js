@@ -39,6 +39,5 @@ creditSchema.index({ storeId: 1, isPaid: 1 })
 creditSchema.index({ storeId: 1, dueDate: 1 })
 creditSchema.index({ storeId: 1, customerPhone: 1 })
 
-
 const Credit = model("Credit", creditSchema)
 module.exports = { Credit } 
