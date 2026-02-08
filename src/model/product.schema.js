@@ -4,8 +4,7 @@ const productSchema = new Schema({
     storeId: {
         type: Schema.Types.ObjectId,
         ref: "Store",
-        required: true,
-        index: true
+        required: true
     },
     name: {
         type: String,
@@ -43,9 +42,9 @@ const productSchema = new Schema({
     }
 }, { timestamps: true })
 
-productSchema.index(
-    { storeId: 1, name: 1, isActive: 1 },
-    { unique: true }
-)
+productSchema.index({ storeId: 1 })
+productSchema.index({ storeId: 1, isActive: 1 })
+productSchema.index({ storeId: 1, stockMeters: 1 })
+
 const Product = model("Product", productSchema)
 module.exports = { Product }

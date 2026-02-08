@@ -16,5 +16,8 @@ const userSchema = new Schema({
     }
 }, { timestamps: true })
 
+userSchema.index({ storeId: 1 })
+userSchema.index({ storeId: 1, role: 1 })
+
 const User = model("User", userSchema)
 module.exports = { User }

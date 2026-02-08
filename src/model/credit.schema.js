@@ -34,9 +34,11 @@ const creditSchema = new Schema({
     }
 }, { timestamps: true })
 
-creditSchema.index({ storeId: 1, createdAt: -1 });
-creditSchema.index({ saleId: 1 });
-creditSchema.index({ dueDate: 1 });
+creditSchema.index({ storeId: 1 })
+creditSchema.index({ storeId: 1, isPaid: 1 })
+creditSchema.index({ storeId: 1, dueDate: 1 })
+creditSchema.index({ storeId: 1, customerPhone: 1 })
+
 
 const Credit = model("Credit", creditSchema)
 module.exports = { Credit } 

@@ -25,5 +25,10 @@ const expenseSchema = new Schema({
     }
 }, { timestamps: true })
 
+expenseSchema.index({ storeId: 1 })
+expenseSchema.index({ storeId: 1, createdAt: -1 })
+expenseSchema.index({ storeId: 1, category: 1 })
+
+
 const Expense = model("Expense", expenseSchema)
 module.exports = { Expense }

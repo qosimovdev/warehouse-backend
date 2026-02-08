@@ -44,9 +44,13 @@ const saleSchema = new Schema({
     }
 }, { timestamps: true })
 
-saleSchema.index({ storeId: 1, createdAt: -1 });
-saleSchema.index({ productId: 1 });
-saleSchema.index({ dueDate: 1 });
+saleSchema.index({ storeId: 1 })
+saleSchema.index({ storeId: 1, createdAt: -1 })
+saleSchema.index({ storeId: 1, sellerId: 1 })
+saleSchema.index({ storeId: 1, productId: 1 })
+saleSchema.index({ storeId: 1, profitUzs: 1 })
+saleSchema.index({ storeId: 1, isLoss: 1 })
+
 
 
 const Sale = model("Sale", saleSchema)

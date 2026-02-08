@@ -4,8 +4,7 @@ const stockInSchema = new Schema({
     storeId: {
         type: Schema.Types.ObjectId,
         ref: "Store",
-        required: true,
-        index: true
+        required: true
     },
     productId: {
         type: Schema.Types.ObjectId,
@@ -57,6 +56,10 @@ const stockInSchema = new Schema({
     //     ref: "StockIn"
     // }
 }, { timestamps: true })
+
+stockInSchema.index({ storeId: 1 })
+stockInSchema.index({ storeId: 1, productId: 1 })
+stockInSchema.index({ storeId: 1, createdAt: -1 })
 
 const StockIn = model("StockIn", stockInSchema)
 module.exports = { StockIn }
