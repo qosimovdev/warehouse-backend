@@ -6,5 +6,6 @@ const managerController = require("../controller/manager.controller")
 router.get("/profit", auth, checkRole.roleGuard("admin"), managerController.getProfit)
 router.get("/top-products", auth, checkRole.roleGuard("admin"), managerController.getTopProducts)
 router.get("/sellers", auth, checkRole.roleGuard("admin"), managerController.getSellerStats)
-router.get("/lose-sales", auth, managerController.getLossSales)
+router.get("/lose-sales", auth, checkRole.roleGuard("admin"), managerController.getLossSales)
+
 module.exports = router

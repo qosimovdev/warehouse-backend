@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Product } = require("../model/product.schema")
 const { Sale } = require("../model/sale.schema")
 const { Credit } = require("../model/credit.schema")
@@ -6,7 +7,7 @@ const { Store } = require("../model/store.schema")
 const { StockIn } = require("../model/stockIn.schema")
 
 exports.getSummary = async (req, res) => {
-    const storeId = req.user.store_id
+    const storeId = new mongoose.Types.ObjectId(req.user.store_id);
     const store = await Store.findById(storeId)
     const totalSales = await Sale.aggregate([
         { $match: { storeId } },
@@ -37,7 +38,7 @@ exports.getRecentSales = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(10)
 
-    res.json(sales)
+    res.json({ count: sales.length, sales })
 }
 
 // kam qolgan tovar
@@ -46,8 +47,7 @@ exports.getLowStock = async (req, res) => {
         storeId: req.user.store_id,
         $expr: { $lte: ["$stockMeters", "$minStockMeters"] }
     }).limit(10)
-
-    res.json(products)
+    res.json({ count: products.length, products })
 }
 
 // to'lov vaxti yaqinlashgan nasiya
@@ -71,7 +71,7 @@ exports.getStockInHistory = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(10)
 
-    res.json(history)
+    res.json({ count: history.length, history })
 }
 
 

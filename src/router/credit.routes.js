@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const creditController = require("../controller/credit.controller");
 const auth = require("../middleware/auth.middleware");
+const checkRole = require("../middleware/role.middleware")
 
-router.get("/", auth, creditController.getCredits)
-router.get("/due", auth, creditController.getDueCredits)
-router.post("/:id/pay", auth, creditController.payCredit)
+router.get("/", auth, checkRole.roleGuard("admin", "seller"), creditController.getCredits)
+router.get("/due", auth, checkRole.roleGuard("admin"), creditController.getDueCredits)
+router.post("/:id/pay", auth, checkRole.roleGuard("admin", "seller"), creditController.payCredit)
 
 module.exports = router;
