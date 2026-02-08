@@ -50,9 +50,10 @@ app.get('/test', (req, res) => {
 });
 
 app.use("/api/auth", authRoutes)
+
 app.use("/api/stores", storeRoutes)
 app.use("/api/products", productRoutes)
-app.use("/api/stock", stockInRoutes)
+app.use("/api/stock-in", stockInRoutes)
 app.use("/api/sales", saleRoutes)
 app.use("/api/credits", creditRoutes)
 app.use("/api/expenses", expenseRoutes)
