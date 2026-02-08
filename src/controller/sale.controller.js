@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Sale } = require("../model/sale.schema");
 const { Product } = require("../model/product.schema");
 const { Credit } = require("../model/credit.schema");
+const updateBalance = require("../utils/updateBalance")
 
 exports.createSale = async (req, res) => {
     const {
@@ -39,8 +40,7 @@ exports.createSale = async (req, res) => {
             isActive: true
         }).session(session);
 
-        if (!product)
-            return res.status(404).json({ message: "Mahsulot topilmadi" });
+        if (!product) throw new Error("PRODUCT_NOT_FOUND");
 
         if (product.stockMeters < qty)
             return res.status(400).json({ message: "Omborda yetarli metr yo'q" });
@@ -64,6 +64,14 @@ exports.createSale = async (req, res) => {
 
         product.stockMeters -= qty;
         await product.save({ session });
+
+        // balance ni yangilash
+        await updateBalance({
+            storeId: req.user.store_id,
+            paymentType,
+            amount: totalPriceUzs,
+            session
+        })
 
         if (paymentType === "credit") {
             await Credit.create([{

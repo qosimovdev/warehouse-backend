@@ -1,5 +1,6 @@
-const { Credit } = require("../model/credit.schema")
 const mongoose = require("mongoose");
+const { Credit } = require("../model/credit.schema")
+const updateBalance = require("../utils/updateBalance")
 
 exports.getCredits = async (req, res) => {
     try {
@@ -66,17 +67,21 @@ exports.payCredit = async (req, res) => {
         if (!Number.isFinite(amount) || amount <= 0) {
             return res.status(400).json({ message: "Noto'g'ri to'lov summasi" });
         }
+
         const credit = await Credit.findOne({
             _id: req.params.id,
             storeId: req.user.store_id,
             isPaid: false
         }).session(session);
+
         if (!credit) {
             return res.status(404).json({
                 message: "Nasiya topilmadi yoki allaqachon yopilgan"
             });
         }
-        credit.paidAmountUzs += amount;
+
+        credit.paidAmountUzs = (credit.paidAmountUzs || 0) + amount;
+
         if (credit.paidAmountUzs >= credit.totalAmountUzs) {
             credit.paidAmountUzs = credit.totalAmountUzs;
             credit.isPaid = true;
@@ -84,9 +89,16 @@ exports.payCredit = async (req, res) => {
         }
 
         await credit.save({ session });
-
         await session.commitTransaction();
-        session.endSession();
+
+        // balance ni yangilash
+        await updateBalance({
+            storeId,
+            paymentType,
+            amount: paidAmount,
+            session
+        });
+
 
         res.json({
             message: "Nasiya to'lovi qabul qilindi",
@@ -94,8 +106,10 @@ exports.payCredit = async (req, res) => {
         });
     } catch (error) {
         await session.abortTransaction();
-        session.endSession();
         console.error("Pay credit error:", error);
         res.status(500).json({ message: "Server xatosi" });
+    } finally {
+        session.endSession();
     }
 };
+

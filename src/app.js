@@ -37,6 +37,7 @@ const productRoutes = require("./router/products.routes")
 const stockInRoutes = require("./router/stockIn.routes")
 const saleRoutes = require("./router/sale.routes")
 const creditRoutes = require("./router/credit.routes")
+const expenseRoutes = require("./router/expense.routes")
 
 app.get('/test', (req, res) => {
     res.status(200).json({
@@ -52,7 +53,7 @@ app.use("/api/products", productRoutes)
 app.use("/api/stock", stockInRoutes)
 app.use("/api/sales", saleRoutes)
 app.use("/api/credits", creditRoutes)
-
+app.use("/api/expenses", expenseRoutes)
 
 
 app.use(require("./middleware/errorHandler"))

@@ -7,23 +7,29 @@ function rebarKgPerM(diameterMm) {
     return (diameterMm * diameterMm) / 162;
 }
 
-exports.calculateMeters = ({
-    productType = productType.toLowerCase(),
-    diameterMm,
-    pieces,
-    piece_length_m,
-    tons,
-    kgPerM,
-    metersPerTon
-}) => {
-    tons = Number(tons)
-    kgPerM = kgPerM !== undefined ? Number(kgPerM) : undefined
-    metersPerTon = metersPerTon !== undefined ? Number(metersPerTon) : undefined
-    pieces = pieces !== undefined ? Number(pieces) : undefined
-    piece_length_m = piece_length_m !== undefined ? Number(piece_length_m) : undefined
-    diameterMm = diameterMm !== undefined ? Number(diameterMm) : undefined
+exports.calculateMeters = (params) => {
+    let {
+        productType,
+        diameterMm,
+        pieces,
+        piece_length_m,
+        tons,
+        kgPerM,
+        metersPerTon
+    } = params;
 
-    if (!productType) throw new Error("productType kiritilishi shart.");
+    if (!productType) {
+        throw new Error("productType kiritilishi shart.");
+    }
+
+    productType = productType.toLowerCase();
+
+    tons = Number(tons);
+    kgPerM = kgPerM !== undefined ? Number(kgPerM) : undefined;
+    metersPerTon = metersPerTon !== undefined ? Number(metersPerTon) : undefined;
+    pieces = pieces !== undefined ? Number(pieces) : undefined;
+    piece_length_m = piece_length_m !== undefined ? Number(piece_length_m) : undefined;
+    diameterMm = diameterMm !== undefined ? Number(diameterMm) : undefined;
 
     if (productType === "rebar") {
         if (Number.isFinite(pieces) && Number.isFinite(piece_length_m)) {
@@ -36,11 +42,16 @@ exports.calculateMeters = ({
         if (Number.isFinite(tons)) {
             if (tons <= 0) throw new Error("Armatura uchun tonna musbat bo'lishi kerak.");
 
-            const kgPerM = Number.isFinite(kgPerM) ? kgPerM : rebarKgPerM(diameterMm);
-            if (!Number.isFinite(kgPerM) || kgPerM <= 0) {
+            const finalKgPerM = Number.isFinite(kgPerM)
+                ? kgPerM
+                : rebarKgPerM(diameterMm);
+
+            if (!Number.isFinite(finalKgPerM) || finalKgPerM <= 0) {
                 throw new Error("Armatura uchun kgPerM yoki diameterMm to'g'ri bo'lishi shart.");
             }
-            return (tons * 1000) / kgPerM;
+
+            return (tons * 1000) / finalKgPerM;
+
         }
 
         throw new Error("Armatura uchun: (dona + dona uzunligi) yoki (tons + diameterMm) kerak.");
