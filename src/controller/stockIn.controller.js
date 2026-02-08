@@ -1,12 +1,7 @@
 const mongoose = require('mongoose');
 const { Product } = require('../model/product.schema');
 const { StockIn } = require('../model/stockIn.schema');
-const {
-    calculateMeters,
-    calculateTotalCostUZS,
-    calculateWeightedAvg,
-    round
-} = require('../utils/stockCalculations');
+const stockCalculations = require('../utils/stockCalculations');
 
 exports.createStockIn = async (req, res, next) => {
     const session = await mongoose.startSession();
@@ -34,8 +29,8 @@ exports.createStockIn = async (req, res, next) => {
             throw new Error("Mahsulot topilmadi");
         }
 
-        const meters = round(
-            calculateMeters({
+        const meters = stockCalculations.round(
+            stockCalculations.calculateMeters({
                 productType: product.type,
                 diameterMm: product.diameterMm,
                 tons,
@@ -51,14 +46,14 @@ exports.createStockIn = async (req, res, next) => {
         }
 
         // TODO: tons bo‘lmagan holatlar uchun total cost logika
-        const totalCostUZS = calculateTotalCostUZS({
+        const totalCostUZS = stockCalculations.calculateTotalCostUZS({
             tons,
             pricePerTon,
             currency,
             usdRate
         });
 
-        const costPerMeter = round(totalCostUZS / meters);
+        const costPerMeter = stockCalculations.round(totalCostUZS / meters);
 
         const [stockIn] = await StockIn.create(
             [
@@ -70,8 +65,8 @@ exports.createStockIn = async (req, res, next) => {
                     pricePerTon,
                     currency,
                     usdRateUsed: currency === "USD" ? usdRate : null,
-                    total_cost_uzs: totalCostUZS,
-                    cost_per_meter: costPerMeter,
+                    totalCostUzs: totalCostUZS,
+                    costPerMeter: costPerMeter,
                     createdBy: req.user.user_id
                 }
             ],
@@ -81,13 +76,13 @@ exports.createStockIn = async (req, res, next) => {
         const oldMeters = product.stockMeters || 0;
         const oldAvg = product.avgCostPerMeter || 0;
 
-        const newStockMeters = round(oldMeters + meters);
-        const newAvgCost = round(
-            calculateWeightedAvg({
-                old_meters: oldMeters,
-                old_avg: oldAvg,
-                new_meters: meters,
-                new_cost_per_meter: costPerMeter
+        const newStockMeters = stockCalculations.round(oldMeters + meters);
+        const newAvgCost = stockCalculations.round(
+            stockCalculations.calculateWeightedAvg({
+                oldMeters: oldMeters,
+                oldAvg: oldAvg,
+                newMeters: meters,
+                newCostPerMeter: costPerMeter
             })
         );
 
@@ -259,10 +254,10 @@ exports.getStockInById = async (req, res) => {
 //         product.stockMeters = round(oldMeters + meters);
 //         product.avgCostPerMeter = round(
 //             calculateWeightedAvg({
-//                 old_meters: oldMeters,
-//                 old_avg: oldAvg,
-//                 new_meters: meters,
-//                 new_cost_per_meter: costPerMeter
+//                 oldMeters: oldMeters,
+//                 oldAvg: oldAvg,
+//                 newMeters: meters,
+//                 newCostPerMeter: costPerMeter
 //             })
 //         );
 

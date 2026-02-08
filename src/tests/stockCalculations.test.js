@@ -48,10 +48,10 @@ test("total cost USD converted to UZS", () => {
 
 test("weighted average calculation", () => {
     const avg = stockCalculations.calculateWeightedAvg({
-        old_meters: 382.17,
-        old_avg: 60837.5,
-        new_meters: 382.17,
-        new_cost_per_meter: 60836.8
+        oldMeters: 382.17,
+        oldAvg: 60837.5,
+        newMeters: 382.17,
+        newCostPerMeter: 60836.8
     })
 
     expect(avg).toBeCloseTo(60837.15, 2)

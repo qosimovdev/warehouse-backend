@@ -11,7 +11,7 @@ exports.calculateMeters = ({
     productType = productType.toLowerCase(),
     diameterMm,
     pieces,
-    pieceLengthM,
+    piece_length_m,
     tons,
     kgPerM,
     metersPerTon
@@ -20,17 +20,17 @@ exports.calculateMeters = ({
     kgPerM = kgPerM !== undefined ? Number(kgPerM) : undefined
     metersPerTon = metersPerTon !== undefined ? Number(metersPerTon) : undefined
     pieces = pieces !== undefined ? Number(pieces) : undefined
-    pieceLengthM = pieceLengthM !== undefined ? Number(pieceLengthM) : undefined
+    piece_length_m = piece_length_m !== undefined ? Number(piece_length_m) : undefined
     diameterMm = diameterMm !== undefined ? Number(diameterMm) : undefined
 
     if (!productType) throw new Error("productType kiritilishi shart.");
 
     if (productType === "rebar") {
-        if (Number.isFinite(pieces) && Number.isFinite(pieceLengthM)) {
-            if (pieces <= 0 || pieceLengthM <= 0) {
+        if (Number.isFinite(pieces) && Number.isFinite(piece_length_m)) {
+            if (pieces <= 0 || piece_length_m <= 0) {
                 throw new Error("Armatura uchun dona soni va dona uzunligi musbat bo'lishi kerak.");
             }
-            return pieces * pieceLengthM;
+            return pieces * piece_length_m;
         }
 
         if (Number.isFinite(tons)) {
@@ -86,22 +86,22 @@ exports.calculateTotalCostUZS = ({
 };
 
 exports.calculateWeightedAvg = ({
-    old_meters,
-    old_avg,
-    new_meters,
-    new_cost_per_meter
+    oldMeters,
+    oldAvg,
+    newMeters,
+    newCostPerMeter
 }) => {
-    const om = Number.isFinite(old_meters) ? old_meters : 0;
-    const oa = Number.isFinite(old_avg) ? old_avg : 0;
+    const om = Number.isFinite(oldMeters) ? oldMeters : 0;
+    const oa = Number.isFinite(oldAvg) ? oldAvg : 0;
 
-    if (!Number.isFinite(new_meters) || new_meters <= 0) return oa;
-    if (!Number.isFinite(new_cost_per_meter) || new_cost_per_meter <= 0) return oa;
+    if (!Number.isFinite(newMeters) || newMeters <= 0) return oa;
+    if (!Number.isFinite(newCostPerMeter) || newCostPerMeter <= 0) return oa;
 
-    if (om === 0) return new_cost_per_meter;
+    if (om === 0) return newCostPerMeter;
 
     return (
-        (om * oa + new_meters * new_cost_per_meter) /
-        (om + new_meters)
+        (om * oa + newMeters * newCostPerMeter) /
+        (om + newMeters)
     );
 };
 
