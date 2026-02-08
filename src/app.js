@@ -38,7 +38,7 @@ const stockInRoutes = require("./router/stockIn.routes")
 const saleRoutes = require("./router/sale.routes")
 const creditRoutes = require("./router/credit.routes")
 
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
     res.status(200).json({
         status: 'OK',
         message: 'Server is running',

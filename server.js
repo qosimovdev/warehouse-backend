@@ -37,7 +37,6 @@ async function startServer() {
         })
     } catch (err) {
         console.error("Startup error:", err.message)
-        // ❗ process.exit YO‘Q
     }
 }
 

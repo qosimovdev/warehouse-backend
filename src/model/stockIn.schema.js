@@ -22,7 +22,6 @@ const stockInSchema = new Schema({
         enum: ["UZS", "USD"],
         required: true
     },
-    usd_rate: Number,
     usd_rate_used: {
         type: Number,
         required: function () {
@@ -34,6 +33,10 @@ const stockInSchema = new Schema({
         required: true
     },
     total_cost_uzs: {
+        type: Number,
+        required: true
+    },
+    cost_per_meter: {
         type: Number,
         required: true
     },
