@@ -35,6 +35,8 @@ const saleSchema = new Schema({
         type: Boolean,
         default: false
     },
+    costPriceUzs: Number,
+    profitUzs: Number,
     sellerId: {
         type: Schema.Types.ObjectId,
         ref: "User",

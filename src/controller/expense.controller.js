@@ -34,7 +34,7 @@ exports.createExpense = async (req, res) => {
         }
 
         const [expense] = await Expense.create([{
-            storeId: store._id,
+            storeId: req.user.store_id,
             category,
             amountUzs,
             source,
@@ -43,7 +43,7 @@ exports.createExpense = async (req, res) => {
 
         // balance ni yangilash
         await updateBalance({
-            storeId: store._id,
+            storeId: req.user.store_id,
             paymentType: source,
             amount: -amountUzs,
             session

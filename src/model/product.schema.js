@@ -26,7 +26,8 @@ const productSchema = new Schema({
     },
     stockMeters: {
         type: Number,
-        default: 0
+        default: 0,
+        index: true
     },
     avgCostPerMeter: {
         type: Number,

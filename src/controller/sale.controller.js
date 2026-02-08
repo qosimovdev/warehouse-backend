@@ -40,43 +40,53 @@ exports.createSale = async (req, res) => {
             isActive: true
         }).session(session);
 
-        if (!product) throw new Error("PRODUCT_NOT_FOUND");
+        if (!product) {
+            return res.status(404).json({ message: "Mahsulot topilmadi" });
+        }
 
-        if (product.stockMeters < qty)
+        if (product.stockMeters < qty) {
             return res.status(400).json({ message: "Omborda yetarli metr yo'q" });
+        }
 
         const totalPriceUzs = qty * price;
-        const isLoss = price < product.avgCostPerMeter;
+        const costPriceUzs = qty * (product.avgCostPerMeter || 0);
+        const profitUzs = totalPriceUzs - costPriceUzs;
 
-        const sale = await Sale.create([{
+        const [sale] = await Sale.create([{
             storeId: req.user.store_id,
             productId: product_id,
             quantityM: qty,
             pricePerM: price,
             totalPriceUzs,
+            costPriceUzs,
+            profitUzs,
             paymentType,
             customerName,
             customerPhone,
             dueDate,
-            isLoss,
+            isLoss: profitUzs < 0,
             sellerId: req.user.user_id
         }], { session });
 
+        // stock kamaytirish
         product.stockMeters -= qty;
         await product.save({ session });
 
-        // balance ni yangilash
-        await updateBalance({
-            storeId: req.user.store_id,
-            paymentType,
-            amount: totalPriceUzs,
-            session
-        })
+        // faqat CASH / BANK bo‘lsa balansga qo‘shiladi
+        if (paymentType !== "credit") {
+            await updateBalance({
+                storeId: req.user.store_id,
+                paymentType,
+                amount: totalPriceUzs,
+                session
+            });
+        }
 
+        // CREDIT bo‘lsa nasiya ochiladi
         if (paymentType === "credit") {
             await Credit.create([{
                 storeId: req.user.store_id,
-                saleId: sale[0]._id,
+                saleId: sale._id,
                 customerName,
                 customerPhone,
                 totalAmountUzs: totalPriceUzs,
@@ -85,20 +95,21 @@ exports.createSale = async (req, res) => {
         }
 
         await session.commitTransaction();
-        session.endSession();
 
         res.status(201).json({
             message: "Sotuv muvaffaqiyatli amalga oshirildi",
-            sale: sale[0]
+            sale
         });
 
     } catch (error) {
         await session.abortTransaction();
-        session.endSession();
         console.error("Create sale error:", error);
         res.status(500).json({ message: "Server xatosi" });
+    } finally {
+        session.endSession();
     }
 };
+
 
 exports.getSales = async (req, res) => {
     try {
