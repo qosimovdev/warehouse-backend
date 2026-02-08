@@ -11,24 +11,24 @@ const creditSchema = new Schema({
         ref: "Sale",
         required: true
     },
-    customer_name: {
+    customerName: {
         type: String,
         required: true
     },
-    customer_phone: String,
-    total_amount_uzs: {
+    customerPhone: String,
+    totalAmountUzs: {
         type: Number,
         required: true
     },
-    paid_amount_uzs: {
+    paidAmountUzs: {
         type: Number,
         default: 0
     },
-    due_date: {
+    dueDate: {
         type: Date,
         required: true
     },
-    is_paid: {
+    isPaid: {
         type: Boolean,
         default: false
     }
@@ -36,7 +36,7 @@ const creditSchema = new Schema({
 
 creditSchema.index({ storeId: 1, createdAt: -1 });
 creditSchema.index({ saleId: 1 });
-creditSchema.index({ due_date: 1 });
+creditSchema.index({ dueDate: 1 });
 
 const Credit = model("Credit", creditSchema)
 module.exports = { Credit } 

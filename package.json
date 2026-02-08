@@ -7,7 +7,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "createAdmin": "node src/scripts/seed.js",
-    "test": "jest"
+    "test": "node jest"
   },
   "author": "Qosimov Ibrohim",
   "license": "ISC",

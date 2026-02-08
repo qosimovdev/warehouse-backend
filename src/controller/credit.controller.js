@@ -13,8 +13,8 @@ exports.getCredits = async (req, res) => {
         };
 
         const credits = await Credit.find(filter)
-            .populate("saleId", "total_price_uzs createdAt")
-            .sort({ due_date: 1 })
+            .populate("saleId", "totalPriceUzs createdAt")
+            .sort({ dueDate: 1 })
             .skip(skip)
             .limit(limit);
 
@@ -62,24 +62,24 @@ exports.payCredit = async (req, res) => {
     session.startTransaction();
 
     try {
-        const amount = Number(req.body.paid_amount_uzs);
+        const amount = Number(req.body.paidAmountUzs);
         if (!Number.isFinite(amount) || amount <= 0) {
             return res.status(400).json({ message: "Noto'g'ri to'lov summasi" });
         }
         const credit = await Credit.findOne({
             _id: req.params.id,
             storeId: req.user.store_id,
-            is_paid: false
+            isPaid: false
         }).session(session);
         if (!credit) {
             return res.status(404).json({
                 message: "Nasiya topilmadi yoki allaqachon yopilgan"
             });
         }
-        credit.paid_amount_uzs += amount;
-        if (credit.paid_amount_uzs >= credit.total_amount_uzs) {
-            credit.paid_amount_uzs = credit.total_amount_uzs;
-            credit.is_paid = true;
+        credit.paidAmountUzs += amount;
+        if (credit.paidAmountUzs >= credit.totalAmountUzs) {
+            credit.paidAmountUzs = credit.totalAmountUzs;
+            credit.isPaid = true;
             credit.paidAt = new Date();
         }
 

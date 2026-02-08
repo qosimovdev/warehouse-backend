@@ -2,10 +2,10 @@ const { Product } = require("../model/product.schema")
 
 exports.createProduct = async (req, res) => {
     try {
-        const { name, type, diameter_mm, spec, min_stock_meters } = req.body
+        const { name, type, diameterMm, spec, minStockMeters } = req.body
 
-        if (type === "rebar" && !diameter_mm)
-            return res.status(400).json({ message: "Armatura turi uchun diameter_mm talab qilinadi" })
+        if (type === "rebar" && !diameterMm)
+            return res.status(400).json({ message: "Armatura turi uchun diameterMm talab qilinadi" })
 
         if (type !== "rebar" && !spec)
             return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo'lishi kerak" })
@@ -22,9 +22,9 @@ exports.createProduct = async (req, res) => {
             storeId: req.user.store_id,
             name,
             type,
-            diameter_mm,
+            diameterMm,
             spec,
-            min_stock_meters
+            minStockMeters
         })
         res.status(201).json({ message: "Maxsulot muvaffaqiyatli yaratildi", product })
     } catch (error) {
@@ -66,7 +66,7 @@ exports.getProductById = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        const { name, type, diameter_mm, spec, min_stock_meters } = req.body
+        const { name, type, diameterMm, spec, minStockMeters } = req.body
 
         const product = await Product.findOne({
             _id: req.params.id,
@@ -77,17 +77,17 @@ exports.updateProduct = async (req, res) => {
         if (!product)
             return res.status(404).json({ message: "Maxsulot topilmadi" })
 
-        if (type === "rebar" && !diameter_mm)
-            return res.status(400).json({ message: "Armatura turi uchun diameter_mm talab qilinadi" })
+        if (type === "rebar" && !diameterMm)
+            return res.status(400).json({ message: "Armatura turi uchun diameterMm talab qilinadi" })
 
         if (type !== "rebar" && !spec)
             return res.status(400).json({ message: "Rebar turiga kirmaydigan mahsulotlarda spec bo'lishi kerak" })
 
         product.name = name ?? product.name
         product.type = type ?? product.type
-        product.diameter_mm = type === "rebar" ? diameter_mm : undefined
+        product.diameterMm = type === "rebar" ? diameterMm : undefined
         product.spec = type !== "rebar" ? spec : undefined
-        product.min_stock_meters = min_stock_meters ?? product.min_stock_meters
+        product.minStockMeters = minStockMeters ?? product.minStockMeters
 
         await product.save()
 

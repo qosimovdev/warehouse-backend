@@ -1,9 +1,9 @@
 const router = require("express").Router();
-const { getCredits, getDueCredits, payCredit } = require("../controller/credit.controller");
+const creditController = require("../controller/credit.controller");
 const auth = require("../middleware/auth.middleware");
 
-router.get("/", auth, getCredits)
-router.get("/due", auth, getDueCredits)
-router.post("/:id/pay", auth, payCredit)
+router.get("/", auth, creditController.getCredits)
+router.get("/due", auth, creditController.getDueCredits)
+router.post("/:id/pay", auth, creditController.payCredit)
 
 module.exports = router;

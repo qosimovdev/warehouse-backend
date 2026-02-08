@@ -13,7 +13,7 @@ const stockInSchema = new Schema({
         required: true
     },
     tons: Number,
-    total_meters: {
+    totalMeters: {
         type: Number,
         required: true
     },
@@ -22,21 +22,21 @@ const stockInSchema = new Schema({
         enum: ["UZS", "USD"],
         required: true
     },
-    usd_rate_used: {
+    usdRateUsed: {
         type: Number,
         required: function () {
             return this.currency === 'USD';
         }
     },
-    price_per_ton: {
+    pricePerTon: {
         type: Number,
         required: true
     },
-    total_cost_uzs: {
+    totalCostUzs: {
         type: Number,
         required: true
     },
-    cost_per_meter: {
+    costPerMeter: {
         type: Number,
         required: true
     },

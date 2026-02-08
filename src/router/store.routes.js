@@ -1,10 +1,10 @@
 const router = require("express").Router()
-const { createStore, getStoreById, getStores, updateStore, deleteStore } = require("../controller/store.controller")
+const storeController = require("../controller/store.controller")
 
-router.post("/", createStore)
-router.get("/", getStores)
-router.get("/:id", getStoreById)
-router.put("/:id", updateStore)
-router.delete("/:id", deleteStore)
+router.post("/", storeController.createStore)
+router.get("/", storeController.getStores)
+router.get("/:id", storeController.getStoreById)
+router.put("/:id", storeController.updateStore)
+router.delete("/:id", storeController.deleteStore)
 
 module.exports = router

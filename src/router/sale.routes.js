@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const auth = require("../middleware/auth.middleware");
 const { roleGuard } = require("../middleware/role.middleware")
-const { createSale, getSales, getSaleById } = require("../controller/sale.controller");
+const saleController = require("../controller/sale.controller");
 
-router.post("/", auth, createSale);
-router.get("/", auth, getSales);
-router.get("/:id", auth, getSaleById);
+router.post("/", auth, saleController.createSale);
+router.get("/", auth, saleController.getSales);
+router.get("/:id", auth, saleController.getSaleById);
 
 module.exports = router;

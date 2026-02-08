@@ -1,61 +1,61 @@
 
 
-function rebarKgPerM(diameter_mm) {
-    if (!Number.isFinite(diameter_mm) || diameter_mm <= 0) {
-        throw new Error("Armatura diameter_mm noto'g'ri.");
+function rebarKgPerM(diameterMm) {
+    if (!Number.isFinite(diameterMm) || diameterMm <= 0) {
+        throw new Error("Armatura diameterMm noto'g'ri.");
     }
-    return (diameter_mm * diameter_mm) / 162;
+    return (diameterMm * diameterMm) / 162;
 }
 
 exports.calculateMeters = ({
     productType = productType.toLowerCase(),
-    diameter_mm,
+    diameterMm,
     pieces,
-    piece_length_m,
+    pieceLengthM,
     tons,
-    kg_per_m,
-    meters_per_ton
+    kgPerM,
+    metersPerTon
 }) => {
     tons = Number(tons)
-    kg_per_m = kg_per_m !== undefined ? Number(kg_per_m) : undefined
-    meters_per_ton = meters_per_ton !== undefined ? Number(meters_per_ton) : undefined
+    kgPerM = kgPerM !== undefined ? Number(kgPerM) : undefined
+    metersPerTon = metersPerTon !== undefined ? Number(metersPerTon) : undefined
     pieces = pieces !== undefined ? Number(pieces) : undefined
-    piece_length_m = piece_length_m !== undefined ? Number(piece_length_m) : undefined
-    diameter_mm = diameter_mm !== undefined ? Number(diameter_mm) : undefined
+    pieceLengthM = pieceLengthM !== undefined ? Number(pieceLengthM) : undefined
+    diameterMm = diameterMm !== undefined ? Number(diameterMm) : undefined
 
     if (!productType) throw new Error("productType kiritilishi shart.");
 
     if (productType === "rebar") {
-        if (Number.isFinite(pieces) && Number.isFinite(piece_length_m)) {
-            if (pieces <= 0 || piece_length_m <= 0) {
+        if (Number.isFinite(pieces) && Number.isFinite(pieceLengthM)) {
+            if (pieces <= 0 || pieceLengthM <= 0) {
                 throw new Error("Armatura uchun dona soni va dona uzunligi musbat bo'lishi kerak.");
             }
-            return pieces * piece_length_m;
+            return pieces * pieceLengthM;
         }
 
         if (Number.isFinite(tons)) {
             if (tons <= 0) throw new Error("Armatura uchun tonna musbat bo'lishi kerak.");
 
-            const kgPerM = Number.isFinite(kg_per_m) ? kg_per_m : rebarKgPerM(diameter_mm);
+            const kgPerM = Number.isFinite(kgPerM) ? kgPerM : rebarKgPerM(diameterMm);
             if (!Number.isFinite(kgPerM) || kgPerM <= 0) {
-                throw new Error("Armatura uchun kg_per_m yoki diameter_mm to'g'ri bo'lishi shart.");
+                throw new Error("Armatura uchun kgPerM yoki diameterMm to'g'ri bo'lishi shart.");
             }
             return (tons * 1000) / kgPerM;
         }
 
-        throw new Error("Armatura uchun: (dona + dona uzunligi) yoki (tons + diameter_mm) kerak.");
+        throw new Error("Armatura uchun: (dona + dona uzunligi) yoki (tons + diameterMm) kerak.");
     }
 
     if (!Number.isFinite(tons) || tons <= 0) {
         throw new Error("Non-rebar uchun tons kiritilishi shart (musbat).");
     }
 
-    if (Number.isFinite(meters_per_ton) && meters_per_ton > 0) {
-        return tons * meters_per_ton;
+    if (Number.isFinite(metersPerTon) && metersPerTon > 0) {
+        return tons * metersPerTon;
     }
 
-    if (Number.isFinite(kg_per_m) && kg_per_m > 0) {
-        return (tons * 1000) / kg_per_m;
+    if (Number.isFinite(kgPerM) && kgPerM > 0) {
+        return (tons * 1000) / kgPerM;
     }
 
     throw new Error("Non-rebar uchun 1 metr og'irligi yoki 1 tonna necha metr kiritilishi shart.");
@@ -63,23 +63,23 @@ exports.calculateMeters = ({
 
 exports.calculateTotalCostUZS = ({
     tons,
-    price_per_ton,
+    pricePerTon,
     currency,
-    usd_rate
+    usdRate
 }) => {
     if (!Number.isFinite(tons) || tons <= 0) throw new Error("tons kiritilishi shart (musbat).");
-    if (!Number.isFinite(price_per_ton) || price_per_ton <= 0) {
-        throw new Error("price_per_ton kiritilishi shart (musbat).");
+    if (!Number.isFinite(pricePerTon) || pricePerTon <= 0) {
+        throw new Error("pricePerTon kiritilishi shart (musbat).");
     }
     if (!currency) throw new Error("currency kiritilishi shart (UZS yoki USD).");
 
-    let total = tons * price_per_ton;
+    let total = tons * pricePerTon;
 
     if (currency === "USD") {
-        if (!Number.isFinite(usd_rate) || usd_rate <= 0) {
-            throw new Error("USD kursi (usd_rate) kiritilishi shart (musbat).");
+        if (!Number.isFinite(usdRate) || usdRate <= 0) {
+            throw new Error("USD kursi (usdRate) kiritilishi shart (musbat).");
         }
-        total *= usd_rate;
+        total *= usdRate;
     }
 
     return total;

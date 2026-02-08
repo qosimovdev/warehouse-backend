@@ -11,27 +11,27 @@ const saleSchema = new Schema({
         ref: 'Product',
         required: true
     },
-    quantity_m: {
+    quantityM: {
         type: Number,
         required: true
     },
-    price_per_m: {
+    pricePerM: {
         type: Number,
         required: true
     },
-    total_price_uzs: {
+    totalPriceUzs: {
         type: Number,
         required: true
     },
-    payment_type: {
+    paymentType: {
         type: String,
         enum: ["cash", "bank", "credit"],
         required: true
     },
-    customer_name: String,
-    customer_phone: String,
-    due_date: Date,
-    is_loss: {
+    customerame: String,
+    customerPhone: String,
+    dueDate: Date,
+    isLoss: {
         type: Boolean,
         default: false
     },
@@ -44,7 +44,7 @@ const saleSchema = new Schema({
 
 saleSchema.index({ storeId: 1, createdAt: -1 });
 saleSchema.index({ productId: 1 });
-saleSchema.index({ due_date: 1 });
+saleSchema.index({ dueDate: 1 });
 
 
 const Sale = model("Sale", saleSchema)

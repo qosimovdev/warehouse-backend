@@ -1,12 +1,13 @@
 const { calculateMeters, calculateTotalCostUZS, calculateWeightedAvg, round } = require("../utils/stockCalculations")
+const stockCalculations = require("../utils/stockCalculations")
 
 describe("Stock calculations", () => {
 
-    test("non-rebar: tons + kg_per_m → meters", () => {
-        const meters = calculateMeters({
+    test("non-rebar: tons + kgPerM → meters", () => {
+        const meters = stockCalculations.calculateMeters({
             productType: "angle",
             tons: 3,
-            kg_per_m: 7.85
+            kgPerM: 7.85
         })
 
         expect(meters).toBeCloseTo(382.17, 2)
@@ -14,39 +15,39 @@ describe("Stock calculations", () => {
 
 })
 
-test("rebar: pieces x piece_length_m", () => {
-    const meters = calculateMeters({
+test("rebar: pieces x pieceLengthM", () => {
+    const meters = stockCalculations.calculateMeters({
         productType: "rebar",
         pieces: 100,
-        piece_length_m: 12
+        pieceLengthM: 12
     })
 
     expect(meters).toBe(1200)
 })
 
-test("rebar: pieces x piece_length_m", () => {
-    const meters = calculateMeters({
+test("rebar: pieces x pieceLengthM", () => {
+    const meters = stockCalculations.calculateMeters({
         productType: "rebar",
         pieces: 100,
-        piece_length_m: 12
+        pieceLengthM: 12
     })
 
     expect(meters).toBe(1200)
 })
 
 test("total cost USD converted to UZS", () => {
-    const total = calculateTotalCostUZS({
+    const total = stockCalculations.calculateTotalCostUZS({
         tons: 3,
-        price_per_ton: 620,
+        pricePerTon: 620,
         currency: "USD",
-        usd_rate: 12500
+        usdRate: 12500
     })
 
     expect(total).toBe(23250000)
 })
 
 test("weighted average calculation", () => {
-    const avg = calculateWeightedAvg({
+    const avg = stockCalculations.calculateWeightedAvg({
         old_meters: 382.17,
         old_avg: 60837.5,
         new_meters: 382.17,

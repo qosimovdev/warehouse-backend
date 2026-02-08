@@ -16,13 +16,13 @@ exports.createStockIn = async (req, res, next) => {
         const {
             productId,
             tons,
-            price_per_ton,
+            pricePerTon,
             currency,
-            usd_rate,
-            kg_per_m,
-            meters_per_ton,
+            usdRate,
+            kgPerM,
+            metersPerTon,
             pieces,
-            piece_length_m
+            pieceLengthM
         } = req.body;
 
         const product = await Product.findOne({
@@ -37,12 +37,12 @@ exports.createStockIn = async (req, res, next) => {
         const meters = round(
             calculateMeters({
                 productType: product.type,
-                diameter_mm: product.diameter_mm,
+                diameterMm: product.diameterMm,
                 tons,
-                kg_per_m,
-                meters_per_ton,
+                kgPerM,
+                metersPerTon,
                 pieces,
-                piece_length_m
+                pieceLengthM
             })
         );
 
@@ -53,9 +53,9 @@ exports.createStockIn = async (req, res, next) => {
         // TODO: tons bo‘lmagan holatlar uchun total cost logika
         const totalCostUZS = calculateTotalCostUZS({
             tons,
-            price_per_ton,
+            pricePerTon,
             currency,
-            usd_rate
+            usdRate
         });
 
         const costPerMeter = round(totalCostUZS / meters);
@@ -66,10 +66,10 @@ exports.createStockIn = async (req, res, next) => {
                     storeId: product.storeId,
                     productId: product._id,
                     tons,
-                    total_meters: meters,
-                    price_per_ton,
+                    totalMeters: meters,
+                    pricePerTon,
                     currency,
-                    usd_rate_used: currency === "USD" ? usd_rate : null,
+                    usdRateUsed: currency === "USD" ? usdRate : null,
                     total_cost_uzs: totalCostUZS,
                     cost_per_meter: costPerMeter,
                     createdBy: req.user.user_id
@@ -78,8 +78,8 @@ exports.createStockIn = async (req, res, next) => {
             { session }
         );
 
-        const oldMeters = product.stock_meters || 0;
-        const oldAvg = product.avg_cost_per_meter || 0;
+        const oldMeters = product.stockMeters || 0;
+        const oldAvg = product.avgCostPerMeter || 0;
 
         const newStockMeters = round(oldMeters + meters);
         const newAvgCost = round(
@@ -91,8 +91,8 @@ exports.createStockIn = async (req, res, next) => {
             })
         );
 
-        product.stock_meters = newStockMeters;
-        product.avg_cost_per_meter = newAvgCost;
+        product.stockMeters = newStockMeters;
+        product.avgCostPerMeter = newAvgCost;
 
         await product.save({ session });
 
@@ -100,8 +100,8 @@ exports.createStockIn = async (req, res, next) => {
         session.endSession();
 
         if (
-            Number.isFinite(product.min_stock_meters) &&
-            product.stock_meters < product.min_stock_meters
+            Number.isFinite(product.minStockMeters) &&
+            product.stockMeters < product.minStockMeters
         ) {
             console.log(`⚠️ ${product.name} kam qoldi`);
         }
@@ -153,7 +153,7 @@ exports.getStockIns = async (req, res) => {
         const stockIns = await StockIn.find(filter)
             .populate({
                 path: "productId",
-                select: "name type spec diameter_mm"
+                select: "name type spec diameterMm"
             })
             .populate({
                 path: "createdBy",
@@ -181,7 +181,7 @@ exports.getStockInById = async (req, res) => {
         })
             .populate({
                 path: 'productId',
-                select: 'name type spec diameter_mm'
+                select: 'name type spec diameterMm'
             })
             .populate({
                 path: 'createdBy',
@@ -205,13 +205,13 @@ exports.getStockInById = async (req, res) => {
 //         const {
 //             productId,
 //             tons,
-//             price_per_ton,
+//             pricePerTon,
 //             currency,
-//             usd_rate,
-//             kg_per_m,
+//             usdRate,
+//             kgPerM,
 //             pieces,
-//             piece_length_m,
-//             meters_per_ton
+//             pieceLengthM,
+//             metersPerTon
 //         } = req.body;
 
 //         const product = await Product.findById(productId).session(session);
@@ -222,19 +222,19 @@ exports.getStockInById = async (req, res) => {
 //             calculateMeters({
 //                 productType: product.type,
 //                 tons,
-//                 kg_per_m,
+//                 kgPerM,
 //                 pieces,
-//                 piece_length_m,
-//                 meters_per_ton
+//                 pieceLengthM,
+//                 metersPerTon
 //             })
 //         );
 
 //         //  umumiy narx
 //         const totalCostUZS = calculateTotalCostUZS({
 //             tons,
-//             price_per_ton,
+//             pricePerTon,
 //             currency,
-//             usd_rate
+//             usdRate
 //         });
 
 //         const costPerMeter = totalCostUZS / meters;
@@ -244,20 +244,20 @@ exports.getStockInById = async (req, res) => {
 //             storeId: product.storeId,
 //             productId,
 //             tons,
-//             total_meters: meters,
-//             price_per_ton,
+//             totalMeters: meters,
+//             pricePerTon,
 //             currency,
-//             usd_rate_used: usd_rate,
+//             usdRateUsed: usdRate,
 //             total_cost_uzs: totalCostUZS,
 //             createdBy: req.user.user_id
 //         }], { session });
 
 //         //  PRODUCT update
-//         const oldMeters = product.stock_meters;
-//         const oldAvg = product.avg_cost_per_meter;
+//         const oldMeters = product.stockMeters;
+//         const oldAvg = product.avgCostPerMeter;
 
-//         product.stock_meters = round(oldMeters + meters);
-//         product.avg_cost_per_meter = round(
+//         product.stockMeters = round(oldMeters + meters);
+//         product.avgCostPerMeter = round(
 //             calculateWeightedAvg({
 //                 old_meters: oldMeters,
 //                 old_avg: oldAvg,
@@ -273,7 +273,7 @@ exports.getStockInById = async (req, res) => {
 //         session.endSession();
 
 //         //  stock limit alert
-//         if (product.stock_meters < product.min_stock_meters) {
+//         if (product.stockMeters < product.stockMeters) {
 //             console.log(`⚠️ ${product.name} kam qoldi`);
 //         }
 
@@ -317,7 +317,7 @@ exports.getStockInById = async (req, res) => {
 //             .find(filter)
 //             .populate({
 //                 path: 'productId',
-//                 select: 'name type spec diameter_mm'
+//                 select: 'name type spec diameterMm'
 //             })
 //             .populate({
 //                 path: 'createdBy',
@@ -358,9 +358,9 @@ exports.getStockInById = async (req, res) => {
 //       .session(session);
 
 //     // productdan metrni AYIR
-//     product.stock_meters -= stockIn.total_meters;
+//     product.stockMeters -= stockIn.totalMeters;
 
-//     if (product.stock_meters < 0)
+//     if (product.stockMeters < 0)
 //       throw new Error("Stock manfiy bo'lib ketdi");
 
 //     await product.save({ session });
@@ -370,11 +370,11 @@ exports.getStockInById = async (req, res) => {
 //       storeId: stockIn.storeId,
 //       productId: stockIn.productId,
 //       tons: -stockIn.tons,
-//       total_meters: -stockIn.total_meters,
+//       totalMeters: -stockIn.totalMeters,
 //       currency: stockIn.currency,
-//       price_per_ton: stockIn.price_per_ton,
+//       pricePerTon: stockIn.pricePerTon,
 //       total_cost_uzs: -stockIn.total_cost_uzs,
-//       usd_rate_used: stockIn.usd_rate_used,
+//       usdRateUsed: stockIn.usdRateUsed,
 //       createdBy: req.user.id,
 //       isCancelRecord: true,
 //       canceledStockInId: stockIn._id

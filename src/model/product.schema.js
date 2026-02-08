@@ -17,22 +17,22 @@ const productSchema = new Schema({
         required: true
     },
     // faqat rebar uchun
-    diameter_mm: {
+    diameterMm: {
         type: Number
     },
     // rebar bo‘lmasa
     spec: {
         type: String
     },
-    stock_meters: {
+    stockMeters: {
         type: Number,
         default: 0
     },
-    avg_cost_per_meter: {
+    avgCostPerMeter: {
         type: Number,
         default: 0
     },
-    min_stock_meters: {
+    minStockMeters: {
         type: Number,
         default: 500
     },
