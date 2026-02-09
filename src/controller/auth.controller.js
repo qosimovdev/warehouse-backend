@@ -8,7 +8,7 @@ exports.createSeller = async (req, res) => {
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Faqat admin kiradi" })
         }
-        const exists = await User.findOne({ login })
+        const exists = await User.findOne({ login, storeId: req.user.store_id })
         if (exists) {
             return res.status(409).json({ message: "Foydalanuvchi allaqachon mavjud" })
         }
