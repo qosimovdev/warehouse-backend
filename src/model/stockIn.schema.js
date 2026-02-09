@@ -29,11 +29,13 @@ const stockInSchema = new Schema({
     },
     pricePerTon: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
     totalCostUzs: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
     costPerMeter: {
         type: Number,

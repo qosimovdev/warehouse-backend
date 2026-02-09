@@ -3,7 +3,6 @@ const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
 const { User } = require("../model/user.schema")
 const { Store } = require("../model/store.schema")
-
 const MONGO_URI = process.env.MONGO_URI
 
 async function seed() {

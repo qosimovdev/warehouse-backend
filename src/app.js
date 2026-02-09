@@ -61,7 +61,7 @@ app.use("/api/history", historyRoutes)
 app.use("/api/manager", managerRoutes)
 app.use("/api/dashboard", dashboardRoutes)
 
-app.use(require("./middleware/errorHandler"))
+app.use(require("./middleware/error.middleware"))
 
 
 module.exports = app
