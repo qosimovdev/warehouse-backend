@@ -1,7 +1,6 @@
 require("dotenv").config()
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
-
 const { User } = require("../model/user.schema")
 const { Store } = require("../model/store.schema")
 
@@ -13,23 +12,27 @@ async function seed() {
         console.log("✅ MongoDB ulanishi muvaffaqiyatli")
 
         // Store yaratish
-        let store = await Store.findOne({ name: "Main Store" })
+        const storeName = 'Main Store'
+        const storeLocation = 'Headquarters'
+        let store = await Store.findOne({ name: storeName })
         if (!store) {
-            const newStore = await Store.create({ name: "Main Store", location: "Headquarters" })
+            const newStore = await Store.create({ name: storeName, location: storeLocation })
             console.log("🏪 Store yaratildi", newStore.name)
         } else {
             console.log("🏪 Store allaqachon mavjud")
         }
 
         // Admin yaratish
-        const adminLogin = "admin2"
+        const adminName = "ibrohim"
+        const adminLogin = "admin"
+        const adminPassword = "admin123"
         let admin = await User.findOne({ login: adminLogin })
 
         if (!admin) {
-            const hashedPassword = await bcrypt.hash("admin123", 10)
+            const hashedPassword = await bcrypt.hash(adminPassword, 10)
 
             const newAdmin = await User.create({
-                name: "Adminnistrator",
+                name: adminName,
                 login: adminLogin,
                 password: hashedPassword,
                 role: "admin",

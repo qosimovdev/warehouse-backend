@@ -12,7 +12,7 @@ exports.calculateMeters = (params) => {
         productType,
         diameterMm,
         pieces,
-        piece_length_m,
+        pieceLengthM,
         tons,
         kgPerM,
         metersPerTon
@@ -28,15 +28,15 @@ exports.calculateMeters = (params) => {
     kgPerM = kgPerM !== undefined ? Number(kgPerM) : undefined;
     metersPerTon = metersPerTon !== undefined ? Number(metersPerTon) : undefined;
     pieces = pieces !== undefined ? Number(pieces) : undefined;
-    piece_length_m = piece_length_m !== undefined ? Number(piece_length_m) : undefined;
+    pieceLengthM = pieceLengthM !== undefined ? Number(pieceLengthM) : undefined;
     diameterMm = diameterMm !== undefined ? Number(diameterMm) : undefined;
 
     if (productType === "rebar") {
-        if (Number.isFinite(pieces) && Number.isFinite(piece_length_m)) {
-            if (pieces <= 0 || piece_length_m <= 0) {
+        if (Number.isFinite(pieces) && Number.isFinite(pieceLengthM)) {
+            if (pieces <= 0 || pieceLengthM <= 0) {
                 throw new Error("Armatura uchun dona soni va dona uzunligi musbat bo'lishi kerak.");
             }
-            return pieces * piece_length_m;
+            return pieces * pieceLengthM;
         }
 
         if (Number.isFinite(tons)) {
