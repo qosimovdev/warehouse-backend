@@ -245,7 +245,12 @@ exports.createStockIn = async (req, res, next) => {
 
 exports.getStockIns = async (req, res) => {
     try {
-        const { fromDate, toDate } = req.query;
+        const {
+            fromDate,
+            toDate,
+            page = 1,
+            limit = 20
+        } = req.query;
         const filter = {
             storeId: req.user.store_id
         };
@@ -268,6 +273,8 @@ exports.getStockIns = async (req, res) => {
                 filter.createdAt.$lte = end;
             }
         }
+        const skip = (Number(page) - 1) * Number(limit);
+
         const stockIns = await StockIn.find(filter)
             .populate({
                 path: "productId",
@@ -277,13 +284,17 @@ exports.getStockIns = async (req, res) => {
                 path: "createdBy",
                 select: "name login"
             })
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(Number(limit))
 
         return res.json({
             success: true,
             message: "Kirimlar olindi",
             count: stockIns.length,
-            data: stockIns
+            page: Number(page),
+            limit: Number(limit),
+            stockIns
         });
     } catch (err) {
         return res.status(500).json({ message: err.message });
