@@ -11,7 +11,7 @@ async function seed() {
         console.log("✅ MongoDB ulanishi muvaffaqiyatli")
 
         // Store yaratish
-        const storeName = 'Test sore'
+        const storeName = 'boltavoy store'
         const storeLocation = 'Namangan'
         let store = await Store.findOne({ name: storeName })
         if (!store) {
@@ -22,9 +22,9 @@ async function seed() {
         }
 
         // Admin yaratish
-        const adminName = "ibrohim"
-        const adminLogin = "ibrohim"
-        const adminPassword = "ibrohim123"
+        const adminName = "boltavoy"
+        const adminLogin = "boltavoy"
+        const adminPassword = "boltavoy123"
         let admin = await User.findOne({ login: adminLogin })
 
         if (!admin) {

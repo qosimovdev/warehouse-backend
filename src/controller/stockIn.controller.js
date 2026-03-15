@@ -44,17 +44,13 @@ exports.createStockIn = async (req, res, next) => {
             pieceLengthM
         });
 
-
-
         if (!Number.isFinite(metersRaw) || metersRaw <= 0) {
             throw new AppError(
                 "Metr noto'g'ri hisoblandi. Ma'lumotlar yetarli emas",
                 422
             );
         }
-
         const meters = stockCalculations.round(metersRaw);
-
         // ===== TOTAL COST =====
         const totalCostUZS = stockCalculations.calculateTotalCostUZS({
             tons,
