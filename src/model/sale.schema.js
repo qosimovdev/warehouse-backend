@@ -28,7 +28,7 @@ const saleSchema = new Schema({
         enum: ["cash", "bank", "credit"],
         required: true
     },
-    customerame: String,
+    customerName: String,
     customerPhone: String,
     dueDate: Date,
     isLoss: {
