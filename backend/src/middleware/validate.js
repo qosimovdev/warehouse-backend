@@ -1,4 +1,4 @@
-// validate.middleware.js
+
 module.exports = (schema, property = "body") => {
     return (req, res, next) => {
         const { error, value } = schema.validate(req[property], {

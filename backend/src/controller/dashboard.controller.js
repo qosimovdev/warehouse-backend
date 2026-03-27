@@ -32,14 +32,14 @@ exports.getSummary = async (req, res) => {
 
 // kop sotilgan
 exports.getRecentSales = async (req, res) => {
-    const sales = await Sale.find({
-        storeId: req.user.store_id
-    })
+    const sales = await Sale.find({ storeId: req.user.store_id })
+        .populate("productId", "name") // faqat name ni olamiz
+        .populate("sellerId", "username name") // agar kerak bo‘lsa
         .sort({ createdAt: -1 })
-        .limit(10)
+        .limit(10);
 
-    res.json({ count: sales.length, sales })
-}
+    res.json({ count: sales.length, sales });
+};
 
 // kam qolgan tovar
 exports.getLowStock = async (req, res) => {
