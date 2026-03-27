@@ -1,0 +1,67 @@
+// const express = require("express")
+// const cors = require("cors")
+
+// const app = express()
+
+// app.use(express.json())
+// app.use(cors())
+
+// app.use(require("./middleware/errorHandler"))
+
+// const authRoutes = require("./router/auth.routes")
+// const storeRoutes = require("./router/store.routes")
+// const productRoutes = require("./router/products.routes")
+// const stockInRoutes = require("./router/stockIn.routes")
+// const saleRoutes = require("./router/sale.routes")
+// const creditRoutes = require("./router/credit.routes")
+
+// app.use("/api/products", productRoutes)
+// app.use("/api/auth", authRoutes)
+// app.use("/api/stores", storeRoutes)
+// app.use("/api/stock", stockInRoutes)
+// app.use("/api/sales", saleRoutes)
+// app.use("/api/credits", creditRoutes)
+
+// module.exports = app
+const express = require("express")
+const cors = require("cors")
+
+const app = express()
+
+app.use(express.json())
+app.use(cors())
+
+const authRoutes = require("./router/auth.routes")
+const storeRoutes = require("./router/store.routes")
+const productRoutes = require("./router/products.routes")
+const stockInRoutes = require("./router/stockIn.routes")
+const saleRoutes = require("./router/sale.routes")
+const creditRoutes = require("./router/credit.routes")
+const expenseRoutes = require("./router/expense.routes")
+const managerRoutes = require("./router/manager.routes")
+const historyRoutes = require("./router/history.routes")
+const dashboardRoutes = require("./router/dashboard.routes")
+app.get('/test', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        message: 'Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.use("/api/auth", authRoutes)
+
+app.use("/api/stores", storeRoutes)
+app.use("/api/products", productRoutes)
+app.use("/api/stock-in", stockInRoutes)
+app.use("/api/sales", saleRoutes)
+app.use("/api/credits", creditRoutes)
+app.use("/api/expenses", expenseRoutes)
+app.use("/api/history", historyRoutes)
+app.use("/api/manager", managerRoutes)
+app.use("/api/dashboard", dashboardRoutes)
+
+app.use(require("./middleware/error.middleware"))
+
+
+module.exports = app
