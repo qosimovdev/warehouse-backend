@@ -36,6 +36,7 @@ exports.createSeller = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
+        console.log("LOGIN CONTROLLER HIT 1")
         const { login, password } = req.body
         const user = await User.findOne({ login })
         if (!user) {
@@ -57,10 +58,12 @@ exports.login = async (req, res) => {
                 name: user.name,
                 role: user.role,
                 store_id: user.storeId
-            }
+            },
+            message: "login ishladi"
         })
     } catch (error) {
         console.error("Login error:", error)
+        console.log("LOGIN CONTROLLER HIT 2")
         res.status(500).json({ message: "Server xatosi" })
     }
 }

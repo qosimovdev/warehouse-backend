@@ -138,17 +138,31 @@ exports.calculateMeters = ({
     productType = productType.toLowerCase();
 
     // REBAR
+    // if (productType === "rebar") {
+    //     if (pieces && pieceLengthM) {
+    //         return pieces * pieceLengthM;
+    //     }
+
+    //     if (tons) {
+    //         const finalKgPerM = kgPerM ?? rebarKgPerM(diameterMm);
+    //         return (tons * 1000) / finalKgPerM;
+    //     }
+    // }
+
     if (productType === "rebar") {
         if (pieces && pieceLengthM) {
             return pieces * pieceLengthM;
         }
 
         if (tons) {
-            const finalKgPerM = kgPerM ?? rebarKgPerM(diameterMm);
+            const finalKgPerM =
+                Number.isFinite(kgPerM) && kgPerM > 0
+                    ? kgPerM
+                    : rebarKgPerM(diameterMm);
+
             return (tons * 1000) / finalKgPerM;
         }
     }
-
     // NON-REBAR
     if (metersPerTon) {
         return tons * metersPerTon;

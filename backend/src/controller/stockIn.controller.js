@@ -15,7 +15,7 @@ exports.createStockIn = async (req, res, next) => {
             pricePerTon,
             currency,
             usdRate,
-            kgPerM,
+            // kgPerM,
             metersPerTon,
             pieces,
             pieceLengthM
@@ -38,7 +38,7 @@ exports.createStockIn = async (req, res, next) => {
             productType: product.type,
             diameterMm: product.diameterMm,
             tons,
-            kgPerM,
+            // kgPerM,
             metersPerTon,
             pieces,
             pieceLengthM
@@ -128,116 +128,6 @@ exports.createStockIn = async (req, res, next) => {
         next(err);
     }
 };
-
-// exports.createStockIn = async (req, res, next) => {
-//     const session = await mongoose.startSession();
-//     session.startTransaction();
-//     try {
-//         const {
-//             productId,
-//             tons,
-//             pricePerTon,
-//             currency,
-//             usdRate,
-//             kgPerM,
-//             metersPerTon,
-//             pieces,
-//             pieceLengthM
-//         } = req.body;
-
-//         const product = await Product.findOne({
-//             _id: new mongoose.Types.ObjectId(productId),
-//             storeId: req.user.store_id
-//         }).session(session);
-//         if (!product) {
-//             throw new Error("Mahsulot topilmadi");
-//         }
-//         const meters = stockCalculations.round(
-//             stockCalculations.calculateMeters({
-//                 productType: product.type,
-//                 diameterMm: product.diameterMm,
-//                 tons,
-//                 kgPerM,
-//                 metersPerTon,
-//                 pieces,
-//                 pieceLengthM
-//             })
-//         );
-//         if (meters <= 0) {
-//             throw new Error("Hisoblangan metr noto'g'ri");
-//         }
-//         // TODO: tons bo'lmagan holatlar uchun total cost logika
-//         const totalCostUZS = stockCalculations.calculateTotalCostUZS({
-//             tons,
-//             pricePerTon,
-//             currency,
-//             usdRate
-//         });
-//         const costPerMeter = stockCalculations.round(totalCostUZS / meters);
-//         if (!Number.isFinite(meters)) {
-//             throw new Error("Hisoblangan metr noto'g'ri (ma'lumot yetarli emas)");
-//         }
-
-//         if (!Number.isFinite(totalCostUZS)) {
-//             throw new Error("Umumiy summa noto'g'ri hisoblandi");
-//         }
-
-//         if (!Number.isFinite(costPerMeter)) {
-//             throw new Error("1 metr narxi noto'g'ri hisoblandi");
-//         }
-//         const [stockIn] = await StockIn.create(
-//             [
-//                 {
-//                     storeId: product.storeId,
-//                     productId: product._id,
-//                     tons,
-//                     totalMeters: meters,
-//                     pricePerTon,
-//                     currency,
-//                     usdRateUsed: currency === "USD" ? usdRate : null,
-//                     totalCostUzs: totalCostUZS,
-//                     costPerMeter: costPerMeter,
-//                     createdBy: req.user.user_id
-//                 }
-//             ],
-//             { session }
-//         );
-//         const oldMeters = product.stockMeters || 0;
-//         const oldAvg = product.avgCostPerMeter || 0;
-//         const newStockMeters = stockCalculations.round(oldMeters + meters);
-//         const newAvgCost = stockCalculations.round(
-//             stockCalculations.calculateWeightedAvg({
-//                 oldMeters: oldMeters,
-//                 oldAvg: oldAvg,
-//                 newMeters: meters,
-//                 newCostPerMeter: costPerMeter
-//             })
-//         );
-//         product.stockMeters = newStockMeters;
-//         product.avgCostPerMeter = newAvgCost;
-//         await product.save({ session });
-//         await session.commitTransaction();
-//         session.endSession();
-//         if (
-//             Number.isFinite(product.minStockMeters) &&
-//             product.stockMeters < product.minStockMeters
-//         ) {
-//             console.log(` ${product.name} kam qoldi`);
-//         }
-//         return res.json({
-//             success: true,
-//             message: "Kirim muvaffaqiyatli saqlandi",
-//             data: {
-//                 stockIn,
-//                 product
-//             }
-//         });
-//     } catch (err) {
-//         await session.abortTransaction();
-//         session.endSession();
-//         next(err);
-//     }
-// };
 
 exports.getStockIns = async (req, res) => {
     try {
