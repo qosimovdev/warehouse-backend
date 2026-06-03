@@ -27,6 +27,7 @@ const connectDB = async () => {
         console.error("MongoDB connection error:", error);
         process.exit(1);
     }
-}
+}warehouse-backend
+
 
 module.exports = connectDB
