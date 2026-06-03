@@ -1,20 +1,21 @@
-require("dotenv").config()
-const app = require("./src/app")
-const connectDB = require("./src/config/db")
+require("dotenv").config();
 
-const PORT = process.env.PORT || 3000
+console.log("Starting server...");
+console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 
+const app = require("./src/app");
+const connectDB = require("./src/config/db");
+
+const PORT = process.env.PORT || 3000;
 async function startServer() {
     try {
-        await connectDB()
-        console.log("Mongo DB is connected")
-
+        await connectDB();
+        console.log("Mongo DB is connected");
         app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`)
-        })
+            console.log(`Server running on port ${PORT}`);
+        });
     } catch (err) {
-        console.error("Startup error:", err.message)
+        console.error("Startup error:", err);
     }
 }
-
-startServer()
+startServer();
